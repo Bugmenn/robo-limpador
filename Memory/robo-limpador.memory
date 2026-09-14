@@ -1,0 +1,53 @@
+# robo-limpador — Contexto do Projeto
+
+## Identificação
+- **Caminho:** `C:\Users\gabri\Área de Trabalho\robo-limpador`
+- **Stack:** Python 3, sem dependências externas (só stdlib), ambiente via `venv` + `requirements.txt`
+- **Tipo:** simulação/IA de robô limpador (agente ainda não implementado — só o ambiente por enquanto)
+
+---
+
+## Arquitetura
+
+- `robo_limpador/ambiente.py` — classe `Ambiente`: grade 6x6 (`grade: list[list[bool]]`), sorteia sujeira por célula a cada rodada via `sortear_sujeira()` (probabilidade fixa, independente por célula)
+- `robo_limpador/visualizacao.py` — `imprimir_grade()`: imprime a grade no console (`X` sujo, `.` limpo)
+- `robo_limpador/simulacao.py` — `executar(numero_rodadas)`: loop que cria o `Ambiente` e, a cada rodada, sorteia e imprime
+- `main.py` — ponto de entrada, chama `executar(numero_rodadas=5)`
+- Separação intencional (via skill `arquitetura-projeto`): ambiente / visualização / loop de execução ficam em módulos distintos para o agente/IA entrar depois sem reescrever essas partes
+- `.claude/` — skills (`arquitetura-projeto`, `otimizacao-codigo`, `frontend-design`) e agentes (`depurador`, `descritor-pr`, `documentador`, `especialista-banco`, `revisor-codigo`) instalados neste projeto
+- `claude/` — clone do repositório https://github.com/Bugmenn/claude (fonte original das skills/agentes acima), mantido como pasta comum (sem `.git` interno)
+
+---
+
+## Padrões de Desenvolvimento
+
+- Nomes de módulos/funções/variáveis em português, consistente com o restante do projeto
+- Módulos com responsabilidade única (estado do ambiente ≠ exibição ≠ orquestração do loop)
+
+---
+
+## Pitfalls / Cuidados
+
+Nenhum identificado até o momento.
+
+---
+
+## Registro de Atividades Recentes
+
+### [2026-09-14] Configuração inicial de memória e diretrizes
+**O que foi feito:** Clonado o repositório de configuração (Bugmenn/claude) para dentro do projeto e aplicado o setup descrito em `config claude.md`: criada a pasta `Memory/` com `diretrizes.md` e este arquivo `.memory`.
+**Arquivos alterados:**
+- `Memory/diretrizes.md` *(novo)*
+- `Memory/robo-limpador.memory` *(novo)*
+- `claude/` *(novo, clone externo)*
+
+### [2026-09-14] Primeira etapa do robô limpador — matriz 6x6 com sujeira aleatória
+**O que foi feito:** Criado o ambiente inicial da simulação em Python: matriz 6x6 que a cada rodada sorteia quais casas ficam sujas (probabilidade fixa por célula), com impressão no console. Estrutura separada em módulos (ambiente / visualização / loop de execução) seguindo a skill `arquitetura-projeto`, para o agente/IA ser plugado depois sem reescrever essas partes. Testado rodando `main.py` via venv — 5 rodadas com padrões de sujeira diferentes entre si.
+**Arquivos alterados:**
+- `robo_limpador/__init__.py` *(novo)*
+- `robo_limpador/ambiente.py` *(novo)* — classe `Ambiente` com grade 6x6 e `sortear_sujeira()`
+- `robo_limpador/visualizacao.py` *(novo)* — `imprimir_grade()`
+- `robo_limpador/simulacao.py` *(novo)* — `executar(numero_rodadas)`
+- `main.py` *(novo)* — ponto de entrada
+- `requirements.txt` *(novo)* — vazio por enquanto (só stdlib)
+- `.venv/` *(novo, ambiente virtual, ignorado pelo git)*
