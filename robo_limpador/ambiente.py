@@ -1,16 +1,16 @@
 import random
 
-TAMANHO = 6
+TAMANHO = 4
 PROBABILIDADE_SUJEIRA = 0.3
 
 
-class Ambiente:
-    def __init__(self, tamanho: int = TAMANHO, probabilidade: float = PROBABILIDADE_SUJEIRA):
-        self.tamanho = tamanho
-        self.probabilidade = probabilidade
-        self.grade = [[False] * tamanho for _ in range(tamanho)]
+def criar_sala(tamanho: int = TAMANHO, probabilidade: float = PROBABILIDADE_SUJEIRA) -> list[list[int]]:
+    return [
+        [1 if random.random() < probabilidade else 0 for _ in range(tamanho)]
+        for _ in range(tamanho)
+    ]
 
-    def sortear_sujeira(self) -> None:
-        for linha in range(self.tamanho):
-            for coluna in range(self.tamanho):
-                self.grade[linha][coluna] = random.random() < self.probabilidade
+
+def checkObj(sala: list[list[int]]) -> int:
+    # Usada pelo agente baseado em objetivos (próxima etapa): 1 = ainda há sujeira, 0 = sala limpa.
+    return 1 if any(1 in linha for linha in sala) else 0

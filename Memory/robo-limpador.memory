@@ -2,18 +2,19 @@
 
 ## Identificação
 - **Caminho:** `C:\Users\gabri\Área de Trabalho\robo-limpador`
-- **Stack:** Python 3, sem dependências externas (só stdlib), ambiente via `venv` + `requirements.txt`
-- **Tipo:** simulação/IA de robô limpador (agente ainda não implementado — só o ambiente por enquanto)
+- **Stack:** Python 3, `numpy` + `matplotlib` (via `venv` + `requirements.txt`)
+- **Tipo:** Atividade Avaliativa de IA — Aspirador de Pó Automático (APA): agente reativo simples + agente baseado em objetivos, mundo 4x4. Enunciado oficial em `docs/AspiradorDePó.pdf`. **Etapa atual: só o ambiente (matriz), sem lógica de agente ainda.**
 
 ---
 
 ## Arquitetura
 
-- `robo_limpador/ambiente.py` — classe `Ambiente`: grade 6x6 (`grade: list[list[bool]]`), sorteia sujeira por célula a cada rodada via `sortear_sujeira()` (probabilidade fixa, independente por célula)
-- `robo_limpador/visualizacao.py` — `imprimir_grade()`: imprime a grade no console (`X` sujo, `.` limpo)
-- `robo_limpador/simulacao.py` — `executar(numero_rodadas)`: loop que cria o `Ambiente` e, a cada rodada, sorteia e imprime
-- `main.py` — ponto de entrada, chama `executar(numero_rodadas=5)`
-- Separação intencional (via skill `arquitetura-projeto`): ambiente / visualização / loop de execução ficam em módulos distintos para o agente/IA entrar depois sem reescrever essas partes
+- `docs/AspiradorDePó.pdf` — enunciado oficial da atividade avaliativa (fonte da verdade para requisitos futuros)
+- `robo_limpador/ambiente.py` — `criar_sala(tamanho=4, probabilidade=0.3)`: matriz 4x4 de `0`/`1` sorteada uma vez (estado inicial de episódio, não re-sorteia por rodada); `checkObj(sala)`: retorna `1` se há sujeira, `0` se limpa — pronta para o agente baseado em objetivos (próxima etapa)
+- `robo_limpador/visualizacao.py` — `exibir(matriz, pos_x=None, pos_y=None)`: mostra a matriz com `matplotlib` (adaptado do modelo do enunciado); posição do agente é opcional pois o agente ainda não existe
+- `main.py` — ponto de entrada, cria a sala e chama `exibir()` (sem loop, sem agente)
+- **Pendente (próxima etapa, fora desta):** ver checklist completo em `PROXIMOS_PASSOS.md` — `robo_limpador/agente.py` (`funcaoMapear`, `agenteReativoSimples`, `agenteObjetivo`, contador `pontos`), loop de simulação, e `RESPOSTAS.md` com as duas perguntas discursivas do enunciado
+- Separação intencional (via skill `arquitetura-projeto`): ambiente / visualização ficam em módulos distintos para o agente entrar depois sem reescrever essas partes
 - `.claude/` — skills (`arquitetura-projeto`, `otimizacao-codigo`, `frontend-design`) e agentes (`depurador`, `descritor-pr`, `documentador`, `especialista-banco`, `revisor-codigo`) instalados neste projeto
 - `claude/` — clone do repositório https://github.com/Bugmenn/claude (fonte original das skills/agentes acima), mantido como pasta comum (sem `.git` interno)
 
@@ -21,8 +22,9 @@
 
 ## Padrões de Desenvolvimento
 
-- Nomes de módulos/funções/variáveis em português, consistente com o restante do projeto
-- Módulos com responsabilidade única (estado do ambiente ≠ exibição ≠ orquestração do loop)
+- Nomes de módulos/funções/variáveis em português, consistente com o restante do projeto (e com os nomes exigidos pelo enunciado: `agenteReativoSimples`, `agenteObjetivo`, `checkObj`, `funcaoMapear`, `pontos`, `posAPAx`/`posAPAy`)
+- Módulos com responsabilidade única (estado do ambiente ≠ exibição ≠ lógica do agente)
+- `checkObj` foi colocada em `ambiente.py` (não no agente) por operar só sobre o estado da sala — comentário no código explica que é para uso futuro do agente
 
 ---
 
@@ -51,3 +53,13 @@ Nenhum identificado até o momento.
 - `main.py` *(novo)* — ponto de entrada
 - `requirements.txt` *(novo)* — vazio por enquanto (só stdlib)
 - `.venv/` *(novo, ambiente virtual, ignorado pelo git)*
+
+### [2026-09-16] Pivô para a atividade avaliativa oficial (APA) — só o ambiente 4x4
+**O que foi feito:** Usuário trouxe o enunciado oficial da atividade (aspirador de pó automático: agente reativo simples + agente baseado em objetivos, mundo 4x4). Isso substitui a simulação 6x6 genérica anterior. Nesta etapa, a pedido do usuário, implementei só o ambiente/matriz — a lógica do agente fica para depois. Planejamento passou por plan mode, incluindo revisão via skills `arquitetura-projeto` e `otimizacao-codigo` antes de codar (conclusão: manter a mesma separação de módulos do projeto anterior, sem necessidade de numpy no sorteio da matriz, `checkObj` cabe em `ambiente.py` com comentário explicando que é para o agente futuro). Testado com backend não interativo do matplotlib (`MPLBACKEND=Agg`) — `criar_sala()`, `checkObj()` e `exibir()` funcionando sem erro.
+**Arquivos alterados:**
+- `docs/AspiradorDePó.pdf` *(novo)* — enunciado oficial, copiado de `C:\Users\gabri\Downloads\AspiradorDePó.pdf`
+- `robo_limpador/ambiente.py` — reescrito: `criar_sala(tamanho=4, probabilidade=0.3)` e `checkObj(sala)` (antes era a classe `Ambiente` 6x6 com `sortear_sujeira()`)
+- `robo_limpador/visualizacao.py` — reescrito: `exibir(matriz, pos_x=None, pos_y=None)` com `matplotlib` (antes era `imprimir_grade()` com print no console)
+- Removido: `robo_limpador/simulacao.py` — não se aplica mais (não há loop de rodadas nesta etapa)
+- `main.py` — reescrito: só cria a sala e chama `exibir()`
+- `requirements.txt` — agora lista `numpy` e `matplotlib` (antes vazio)

@@ -1,4 +1,6 @@
-from robo_limpador.simulacao import executar
+from robo_limpador.ambiente import criar_sala
+from robo_limpador.visualizacao import exibir
 
 if __name__ == "__main__":
-    executar(numero_rodadas=5)
+    sala = criar_sala()
+    exibir(sala)
