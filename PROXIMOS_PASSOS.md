@@ -1,10 +1,12 @@
 # Próximos passos — Atividade Avaliativa (APA)
 
-Este documento registra o que **ainda falta implementar** da atividade avaliativa (enunciado completo em `docs/AspiradorDePó.pdf`), já que a etapa atual do código cobriu só o ambiente (matriz 4x4 + visualização). Serve de checklist para retomar o trabalho depois.
+Este documento registra o que **ainda falta implementar** da atividade avaliativa (enunciado completo em `docs/AspiradorDePó.pdf`), já que a etapa atual do código cobriu só o ambiente (matriz + visualização). Serve de checklist para retomar o trabalho depois.
+
+**Importante sobre o mundo:** a matriz é **6x6**, mas só o quadrado central 4x4 é sala limpável — linha/coluna 1 e 6 (1-indexado; índices 0 e 5 em Python) são **paredes** (`PAREDE=-1` na matriz). Toda a lógica de movimento do agente precisa considerar isso: mover para uma célula com valor `PAREDE` não deve ter efeito (a posição não muda), já que é uma parede de verdade — não uma metáfora de limpar 4x4 "como se fosse" o mundo inteiro.
 
 ## O que já existe
 
-- `robo_limpador/ambiente.py` — `criar_sala(tamanho=4, probabilidade=0.3)` (matriz 4x4, sujeira sorteada uma vez) e `checkObj(sala)` (`1` se há sujeira, `0` se limpa — já pronta, só falta ser consumida pelo agente).
+- `robo_limpador/ambiente.py` — `criar_sala(tamanho_total=6, probabilidade=0.3)` (matriz 6x6 com bordas `PAREDE=-1` e sujeira sorteada só no 4x4 interno) e `checkObj(sala)` (`1` se há sujeira, `0` se limpa — já pronta, só falta ser consumida pelo agente).
 - `robo_limpador/visualizacao.py` — `exibir(matriz, pos_x=None, pos_y=None)`, adaptado do modelo de código do enunciado (matplotlib).
 - `main.py` — só cria a sala e chama `exibir()`, sem agente.
 
@@ -13,9 +15,9 @@ Este documento registra o que **ainda falta implementar** da atividade avaliativ
 Criar `robo_limpador/agente.py` com:
 
 - **`funcaoMapear(percepcao)`** — dica do enunciado: função central que decide a ação a partir da percepção. Deve concentrar a lógica "se a célula atual está suja → `'aspirar'`; senão → próximo passo de um percurso que garanta cobrir toda a sala".
-- **`agenteReativoSimples(percepcao)`** — retorna uma de 5 ações: `'acima'`, `'abaixo'`, `'esquerda'`, `'direita'`, `'aspirar'`. Precisa garantir limpar toda a sala **independentemente da posição inicial**. Ações contra a parede não têm efeito (mas não são proibidas — não precisa impedir de tentar).
-- Como um agente puramente reativo (sem estado) não consegue garantir cobertura total por definição, a prática usual (e compatível com o modelo do enunciado, que já usa `posAPAx`/`posAPAy` como globais) é manter um pequeno estado global mínimo (posição atual + direção do percurso) para implementar uma varredura sistemática tipo zigue-zague (boustrophedon), que cobre todas as células a partir de qualquer ponto de partida.
-- **Pergunta a responder (documentar em `RESPOSTAS.md`, ver abaixo):** essa solução é extensível para um mundo 3x3? E para 6x6? Por quê.
+- **`agenteReativoSimples(percepcao)`** — retorna uma de 5 ações: `'acima'`, `'abaixo'`, `'esquerda'`, `'direita'`, `'aspirar'`. Precisa garantir limpar toda a sala **independentemente da posição inicial**. Ações contra a parede não têm efeito — e aqui "parede" agora é literal (`sala[nova_linha][nova_coluna] == PAREDE`), não apenas o limite do array.
+- Como um agente puramente reativo (sem estado) não consegue garantir cobertura total por definição, a prática usual (e compatível com o modelo do enunciado, que já usa `posAPAx`/`posAPAy` como globais) é manter um pequeno estado global mínimo (posição atual + direção do percurso) para implementar uma varredura sistemática tipo zigue-zague (boustrophedon) sobre o **quadrado interno 4x4**, que cobre todas as células limpáveis a partir de qualquer ponto de partida dentro da sala.
+- **Pergunta a responder (documentar em `RESPOSTAS.md`, ver abaixo):** essa solução é extensível para um mundo 3x3? E para 6x6? Por quê. Como o mundo real já tem bordas-parede em torno de uma área útil, vale diferenciar na resposta "mundo NxN sem parede" de "área útil NxN cercada por parede" — são generalizações um pouco diferentes.
 
 ## Parte 2 — Agente Baseado em Objetivos (pendente)
 
