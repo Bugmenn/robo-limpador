@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Atividade avaliativa de IA: um agente Aspirador de Pó Automático (APA), implementado em duas etapas — primeiro como **Agente Reativo Simples**, depois evoluído para **Agente Baseado em Objetivos**. O enunciado oficial está em `docs/AspiradorDePó.pdf` — é a fonte da verdade para requisitos (nomes de função exigidos, assinaturas, regras).
 
-**Mundo real: matriz 6x6 com bordas-parede.** Linha 1, linha 6, coluna 1 e coluna 6 (1-indexado) são paredes; a sala limpável é o quadrado 4x4 central. Representado numa única matriz com `PAREDE=-1`, `0`=limpo, `1`=sujo.
+**Mundo real: matriz 6x6 com bordas-parede.** Linha 1, linha 6, coluna 1 e coluna 6 (1-indexado) são paredes; a sala limpável é o quadrado 4x4 central. Representado numa única matriz com `LIMPO=0`, `PAREDE=1`, `SUJO=2`. Cada sala tem de 3 a 7 sujeiras (`MIN_SUJEIRAS`/`MAX_SUJEIRAS`).
 
 **Etapa atual do código: só o ambiente (matriz 4x4 com sujeira sorteada).** A lógica do agente (`agenteReativoSimples`, `agenteObjetivo`, `funcaoMapear`, `checkObj` sendo consumida, contador `pontos`) ainda não foi implementada — checklist detalhado em `PROXIMOS_PASSOS.md`.
 
@@ -22,7 +22,7 @@ Sem testes, lint ou build configurados.
 
 ## Arquitetura
 
-- `robo_limpador/ambiente.py` — `criar_sala(tamanho_total=6, probabilidade=0.3)`: gera a matriz 6x6 (borda=`PAREDE`(-1), interno 4x4=`1` sujo/`0` limpo), sorteada uma vez por episódio (não re-sorteia a cada passo). `checkObj(sala)`: retorna `1`/`0` conforme há sujeira — já existe aqui porque o enunciado pede essa função fora do agente, mas só terá consumidor quando o agente for implementado.
+- `robo_limpador/ambiente.py` — `criar_sala(tamanho_total=6)`: gera a matriz 6x6 (borda=`PAREDE`(1), interno 4x4=`SUJO`(2)/`LIMPO`(0), com 3 a 7 células sujas sorteadas via `random.sample`), sorteada uma vez por episódio (não re-sorteia a cada passo). `checkObj(sala)`: retorna `1`/`0` conforme há `SUJO` na matriz (atenção: o `1` retornado é o sinal "há sujeira", não o valor de célula `PAREDE`) — já existe aqui porque o enunciado pede essa função fora do agente, mas só terá consumidor quando o agente for implementado.
 - `robo_limpador/visualizacao.py` — `exibir(matriz, pos_x=None, pos_y=None)`: exibe a matriz com `matplotlib`, adaptado do modelo de código fornecido no enunciado. `pos_x`/`pos_y` são opcionais porque ainda não há agente com posição.
 - `main.py` — cria a sala e chama `exibir()`.
 

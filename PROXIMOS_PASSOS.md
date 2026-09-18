@@ -2,11 +2,11 @@
 
 Este documento registra o que **ainda falta implementar** da atividade avaliativa (enunciado completo em `docs/AspiradorDePó.pdf`), já que a etapa atual do código cobriu só o ambiente (matriz + visualização). Serve de checklist para retomar o trabalho depois.
 
-**Importante sobre o mundo:** a matriz é **6x6**, mas só o quadrado central 4x4 é sala limpável — linha/coluna 1 e 6 (1-indexado; índices 0 e 5 em Python) são **paredes** (`PAREDE=-1` na matriz). Toda a lógica de movimento do agente precisa considerar isso: mover para uma célula com valor `PAREDE` não deve ter efeito (a posição não muda), já que é uma parede de verdade — não uma metáfora de limpar 4x4 "como se fosse" o mundo inteiro.
+**Importante sobre o mundo:** a matriz é **6x6**, mas só o quadrado central 4x4 é sala limpável — linha/coluna 1 e 6 (1-indexado; índices 0 e 5 em Python) são **paredes** (`PAREDE=1` na matriz; `LIMPO=0`, `SUJO=2`). Toda a lógica de movimento do agente precisa considerar isso: mover para uma célula com valor `PAREDE` não deve ter efeito (a posição não muda), já que é uma parede de verdade — não uma metáfora de limpar 4x4 "como se fosse" o mundo inteiro.
 
 ## O que já existe
 
-- `robo_limpador/ambiente.py` — `criar_sala(tamanho_total=6, probabilidade=0.3)` (matriz 6x6 com bordas `PAREDE=-1` e sujeira sorteada só no 4x4 interno) e `checkObj(sala)` (`1` se há sujeira, `0` se limpa — já pronta, só falta ser consumida pelo agente).
+- `robo_limpador/ambiente.py` — `criar_sala(tamanho_total=6)` (matriz 6x6 com bordas `PAREDE=1`, interno `LIMPO=0`/`SUJO=2`, com 3 a 7 sujeiras sorteadas só no 4x4 interno) e `checkObj(sala)` (`1` se há `SUJO`, `0` se limpa — já pronta, só falta ser consumida pelo agente).
 - `robo_limpador/visualizacao.py` — `exibir(matriz, pos_x=None, pos_y=None)`, adaptado do modelo de código do enunciado (matplotlib).
 - `main.py` — só cria a sala e chama `exibir()`, sem agente.
 

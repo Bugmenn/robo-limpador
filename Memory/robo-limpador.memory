@@ -10,7 +10,7 @@
 ## Arquitetura
 
 - `docs/AspiradorDePó.pdf` — enunciado oficial da atividade avaliativa (fonte da verdade para requisitos futuros)
-- `robo_limpador/ambiente.py` — `criar_sala(tamanho_total=6, probabilidade=0.3)`: matriz 6x6 onde a borda é `PAREDE=-1` e o quadrado interno 4x4 é sorteado como `0`/`1` (estado inicial de episódio, não re-sorteia por rodada); `checkObj(sala)`: retorna `1` se há sujeira, `0` se limpa — pronta para o agente baseado em objetivos (próxima etapa). Constantes: `TAMANHO_TOTAL=6`, `TAMANHO_UTIL=4`, `PAREDE=-1`
+- `robo_limpador/ambiente.py` — `criar_sala(tamanho_total=6)`: matriz 6x6 onde a borda é `PAREDE=1` e o quadrado interno 4x4 é `LIMPO=0` com 3 a 7 células `SUJO=2` sorteadas (estado inicial de episódio, não re-sorteia por rodada); `checkObj(sala)`: retorna `1` se há `SUJO`, `0` se limpa — pronta para o agente baseado em objetivos (próxima etapa). Constantes: `TAMANHO_TOTAL=6`, `TAMANHO_UTIL=4`, `LIMPO=0`, `PAREDE=1`, `SUJO=2`, `MIN_SUJEIRAS=3`, `MAX_SUJEIRAS=7`
 - `robo_limpador/visualizacao.py` — `exibir(matriz, pos_x=None, pos_y=None)`: mostra a matriz com `matplotlib` (adaptado do modelo do enunciado); posição do agente é opcional pois o agente ainda não existe
 - `main.py` — ponto de entrada, cria a sala e chama `exibir()` (sem loop, sem agente)
 - **Pendente (próxima etapa, fora desta):** ver checklist completo em `PROXIMOS_PASSOS.md` — `robo_limpador/agente.py` (`funcaoMapear`, `agenteReativoSimples`, `agenteObjetivo`, contador `pontos`), loop de simulação, e `RESPOSTAS.md` com as duas perguntas discursivas do enunciado
@@ -67,4 +67,10 @@ Nenhum identificado até o momento.
 ### [2026-09-18] Correção do mundo — 6x6 com bordas-parede, área útil 4x4
 **O que foi feito:** Usuário corrigiu o entendimento do ambiente: a matriz é 6x6, mas só o quadrado central 4x4 é sala limpável — linha 1, linha 6, coluna 1 e coluna 6 (1-indexado) são paredes. Decidido em plan mode: representar tudo numa única matriz 6x6 com valor especial `PAREDE=-1` (em vez de matriz de sujeira + máscara separada), e deixar o `cmap='gray'` do matplotlib distinguir os 3 valores automaticamente (sem colormap customizado). `checkObj` não precisou mudar (paredes nunca valem `1`). Testado com backend não interativo — bordas saem `-1`, sujeira só sorteada nas células internas.
 **Arquivos alterados:**
-- `robo_limpador/ambiente.py` — reescrito: `criar_sala()` agora gera 6x6 com bordas `PAREDE=-1` e sorteia sujeira só no 4x4 interno (antes gerava uma matriz 4x4 pura, sem parede)
+- `robo_limpador/ambiente.py` — reescrito: `criar_sala()` agora gera 6x6 com bordas `PAREDE` e sorteia sujeira só no 4x4 interno (antes gerava uma matriz 4x4 pura, sem parede)
+
+### [2026-09-18] Codificação da matriz e quantidade de sujeiras
+**O que foi feito:** Por pedido do usuário: cada sala tem de 3 a 7 sujeiras (sorteadas com `random.sample` no 4x4 interno, em vez de probabilidade por célula — parâmetro `probabilidade` removido). Codificação da matriz redefinida: `LIMPO=0`, `PAREDE=1`, `SUJO=2` (antes parede era -1 e sujo era 1). `checkObj` agora procura `SUJO` (2) em vez de `1` — mudança necessária, senão as paredes (1) seriam lidas como sujeira. Validado com 2000 salas: contagem sempre entre 3 e 7. Zip do projeto sem arquivos do Claude gerado em `C:\Users\gabri\Área de Trabalho\robo-limpador.zip` (antes desta mudança de codificação — regerar se for enviar de novo).
+**Arquivos alterados:**
+- `robo_limpador/ambiente.py` — novas constantes `LIMPO/PAREDE/SUJO/MIN_SUJEIRAS/MAX_SUJEIRAS`, `criar_sala` sem `probabilidade`, `checkObj` procura `SUJO`
+- `CLAUDE.md`, `PROXIMOS_PASSOS.md`, `Memory/robo-limpador.memory` — codificação e regra de 3 a 7 sujeiras documentadas
